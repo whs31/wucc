@@ -10,9 +10,11 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 serde_norway = "0.9.42"
 
+human-panic = "2.0.3"
 colored = "3.0.0"
 indicatif = "0.17.11"
 
 clap = { version = "4.5.38", features = ["derive", "color"] }
 
 askama = { version = "0.14.0", features = ["serde_json"] }
+xxd-rs = "0.4.0"
