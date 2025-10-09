@@ -21,7 +21,13 @@ impl dyn VersionIO {
     if let Ok(cargo) = super::CargoFile::new_auto() {
       files.push(("Cargo manifest", Box::new(cargo) as Box<dyn VersionIO>));
     }
-    
+    if let Ok(cmake) = super::CmakeFile::new_auto() {
+      files.push(("CMakeLists", Box::new(cmake) as Box<dyn VersionIO>));
+    }
+    if let Ok(conan) = super::ConanFile::new_auto() {
+      files.push(("Conanfile", Box::new(conan) as Box<dyn VersionIO>));
+    }
+
     files
   }
 }

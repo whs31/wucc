@@ -1,6 +1,12 @@
 mod cargo;
+mod cmake;
+mod conan;
+mod export_header;
 mod interfaces;
 mod metafile;
 mod run;
 
-pub use self::{interfaces::VersionIO, metafile::YamlMetafile, cargo::CargoFile, run::run};
+pub use self::{
+  cargo::CargoFile, cmake::CmakeFile, conan::ConanFile, interfaces::VersionIO,
+  metafile::YamlMetafile, run::run,
+};

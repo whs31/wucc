@@ -1,11 +1,11 @@
 use anyhow::{Context, Result};
 use std::path::{Path, PathBuf};
 
-pub struct CargoFile {
+pub struct ConanFile {
   path: PathBuf,
 }
 
-impl super::VersionIO for CargoFile {
+impl super::VersionIO for ConanFile {
   fn new(path: &Path) -> Self {
     Self {
       path: path.to_path_buf(),
@@ -13,7 +13,7 @@ impl super::VersionIO for CargoFile {
   }
 
   fn new_auto() -> Result<Self> {
-    let path_candidates = vec!["Cargo.toml"];
+    let path_candidates = vec!["conanfile.py"];
     let mut path = None;
     for path_candidate in path_candidates {
       let path_candidate = PathBuf::from(path_candidate);
@@ -23,25 +23,33 @@ impl super::VersionIO for CargoFile {
       }
     }
     Ok(Self::new(
-      path.context("Failed to find cargo file")?.as_path(),
+      path.context("Failed to find conan file")?.as_path(),
     ))
   }
 
   fn read(&self) -> Result<semver::Version> {
     let content = std::fs::read_to_string(&self.path)
-      .with_context(|| format!("Failed to read cargo file: {}", self.path.display()))?;
+      .with_context(|| format!("Failed to read conanfile: {}", self.path.display()))?;
 
     let re = regex::Regex::new(r#"(?m)^\s*version\s*=\s*"([^"]+)"\s*$"#)
       .context("Failed to compile regex")?;
-    let mut in_package_section = false;
+    let mut in_conan_class = false;
 
     for line in content.lines() {
-      if line.trim().starts_with('[') {
-        in_package_section = line.trim() == "[package]";
+      if line.trim().starts_with("class") && line.contains("ConanFile") {
+        in_conan_class = true;
         continue;
       }
 
-      if in_package_section {
+      if line.trim().starts_with("class") && in_conan_class {
+        in_conan_class = false;
+        if line.contains("ConanFile") {
+          in_conan_class = true;
+        }
+        continue;
+      }
+
+      if in_conan_class {
         if let Some(captures) = re.captures(line) {
           let version_str = captures.get(1).unwrap().as_str();
           return semver::Version::parse(version_str)
@@ -51,31 +59,40 @@ impl super::VersionIO for CargoFile {
     }
 
     Err(anyhow::anyhow!(
-      "Version field not found in [package] section of Cargo.toml"
+      "Version field not found in ConanFile class"
     ))
   }
 
   fn write(&self, version: &semver::Version) -> Result<()> {
     let content = std::fs::read_to_string(&self.path)
-      .with_context(|| format!("Failed to read cargo file: {}", self.path.display()))?;
+      .with_context(|| format!("Failed to read conanfile: {}", self.path.display()))?;
 
     let re = regex::Regex::new(r#"(?m)^(\s*version\s*=\s*")[^"]+(".*)$"#)
       .context("Failed to compile regex")?;
 
-    let mut in_package_section = false;
+    let mut in_conan_class = false;
     let mut new_lines = Vec::new();
     let mut version_replaced = false;
 
     for line in content.lines() {
       let current_line = line;
 
-      if current_line.trim().starts_with('[') {
-        in_package_section = current_line.trim() == "[package]";
+      if current_line.trim().starts_with("class") && current_line.contains("ConanFile") {
+        in_conan_class = true;
         new_lines.push(current_line.to_string());
         continue;
       }
 
-      if in_package_section && !version_replaced {
+      if current_line.trim().starts_with("class") && in_conan_class {
+        in_conan_class = false;
+        if current_line.contains("ConanFile") {
+          in_conan_class = true;
+        }
+        new_lines.push(current_line.to_string());
+        continue;
+      }
+
+      if in_conan_class && !version_replaced {
         if let Some(captures) = re.captures(current_line) {
           let new_line = format!("{}{}{}", &captures[1], version, &captures[2]);
           new_lines.push(new_line);
@@ -90,7 +107,7 @@ impl super::VersionIO for CargoFile {
     let new_content = new_lines.join("\n");
     if new_content != content {
       std::fs::write(&self.path, new_content)
-        .with_context(|| format!("Failed to write cargo file: {}", self.path.display()))?;
+        .with_context(|| format!("Failed to write conanfile: {}", self.path.display()))?;
     }
 
     Ok(())
