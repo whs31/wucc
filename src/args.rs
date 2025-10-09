@@ -19,6 +19,7 @@ pub enum Subcommand {
   JsonToCpp(JsonToCppCompileArgs),
   YamlToCpp(YamlToCppCompileArgs),
   Hexdump(HexdumpArgs),
+  Version(VersionArgs),
 }
 
 #[derive(clap::Args, Debug, Clone)]
@@ -125,7 +126,7 @@ pub struct HexdumpGenerateArgs {
   /// File to read from (default: stdin).
   #[arg(value_name = "FILE")]
   pub file: Option<String>,
-  
+
   /// Specifies a template file which shall be used for a generation (default: C).
   #[arg(
         short = 't',
@@ -134,19 +135,19 @@ pub struct HexdumpGenerateArgs {
         default_value_t = HexdumpGenerateFormat::C
   )]
   pub template: HexdumpGenerateFormat,
-  
+
   /// Specifies a custom prefix for the template.
   #[arg(long = "set-prefix")]
   pub prefix: Option<String>,
-  
+
   /// Specifies a custom suffix for the template.
   #[arg(long = "set-suffix")]
   pub suffix: Option<String>,
-  
+
   /// Specifies a custom separator for the template.
   #[arg(long = "set-separator")]
   pub separator: Option<String>,
-  
+
   /// Specifies a custom number of bytes per line for the template.
   #[arg(long = "set-bytes")]
   pub line_size: Option<u64>,
@@ -179,7 +180,7 @@ pub enum HexdumpGenerateFormat {
   C,
   Cpp,
   Rust,
-  Python
+  Python,
 }
 
 impl std::str::FromStr for HexdumpGenerateFormat {
@@ -194,4 +195,27 @@ impl std::str::FromStr for HexdumpGenerateFormat {
       _ => Err(format!("Invalid format: {}", s)),
     }
   }
+}
+
+#[derive(clap::Args, Debug, Clone)]
+pub struct VersionArgs {
+  /// Show versions and exit.
+  #[arg(short = 's', long = "show", conflicts_with_all = ["assign", "bump_patch", "bump_minor", "bump_major"])]
+  pub show: bool,
+
+  /// Assign new version.
+  #[arg(short = 'a', long = "assign", conflicts_with_all = ["show", "bump_patch", "bump_minor", "bump_major"])]
+  pub assign: Option<String>,
+
+  /// Bump version patch.
+  #[arg(short = 'p', long = "bump-patch", conflicts_with_all = ["show", "assign", "bump_minor", "bump_major"])]
+  pub bump_patch: bool,
+
+  /// Bump version minor.
+  #[arg(short = 'm', long = "bump-minor", conflicts_with_all = ["show", "assign", "bump_patch", "bump_major"])]
+  pub bump_minor: bool,
+
+  /// Bump version major.
+  #[arg(short = 'M', long = "bump-major", conflicts_with_all = ["show", "assign", "bump_patch", "bump_minor"])]
+  pub bump_major: bool,
 }
