@@ -20,3 +20,4 @@ askama = { version = "0.14.0", features = ["serde_json"] }
 xxd-rs = "0.4.0"
 semver = "1.0.27"
 regex = "1.11.3"
+rand = "0.9.1"

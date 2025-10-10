@@ -7,6 +7,6 @@ mod metafile;
 mod run;
 
 pub use self::{
-  cargo::CargoFile, cmake::CmakeFile, conan::ConanFile, interfaces::VersionIO,
-  metafile::YamlMetafile, run::run,
+  cargo::CargoFile, cmake::CmakeFile, conan::ConanFile, export_header::ExportHeaderFile,
+  interfaces::VersionIO, metafile::YamlMetafile, run::run,
 };

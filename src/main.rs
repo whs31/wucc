@@ -5,6 +5,7 @@ pub(crate) mod cli;
 mod compilers;
 mod hexdump;
 mod version;
+mod misc;
 
 fn main() -> Result<()> {
   human_panic::setup_panic!();
@@ -22,7 +23,8 @@ fn main() -> Result<()> {
       c.compile(a.input.as_slice(), &a.output_name)?;
     }
     args::Subcommand::Hexdump(a) => hexdump::run(a)?,
-    args::Subcommand::Version(a) => version::run(a)?
+    args::Subcommand::Version(a) => version::run(a)?,
+    args::Subcommand::WhoIsTheBest => misc::credits()
   }
 
   Ok(())

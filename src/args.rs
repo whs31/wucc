@@ -20,6 +20,9 @@ pub enum Subcommand {
   YamlToCpp(YamlToCppCompileArgs),
   Hexdump(HexdumpArgs),
   Version(VersionArgs),
+
+  #[clap(hide = true)]
+  WhoIsTheBest,
 }
 
 #[derive(clap::Args, Debug, Clone)]

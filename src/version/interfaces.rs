@@ -27,6 +27,9 @@ impl dyn VersionIO {
     if let Ok(conan) = super::ConanFile::new_auto() {
       files.push(("Conanfile", Box::new(conan) as Box<dyn VersionIO>));
     }
+    if let Ok(header) = super::ExportHeaderFile::new_auto() {
+      files.push(("Export header", Box::new(header) as Box<dyn VersionIO>));
+    }
 
     files
   }
