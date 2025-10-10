@@ -2,6 +2,13 @@
 name = "wucc"
 version = "0.1.0"
 edition = "2024"
+license-file = "LICENSE"
+description = "whs31's utilities and compilers collection"
+homepage = "https://github.com/whs31/wucc"
+repository = "https://github.com/whs31/wucc"
+readme = "README.md"
+keywords = ["cli", "cpp", "json", "compiler"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0.98"
