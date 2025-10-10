@@ -18,6 +18,7 @@ pub struct Args {
 pub enum Subcommand {
   JsonToCpp(JsonToCppCompileArgs),
   YamlToCpp(YamlToCppCompileArgs),
+  Embed(EmbedCompileArgs),
   Hexdump(HexdumpArgs),
   Version(VersionArgs),
 
@@ -69,6 +70,29 @@ pub struct YamlToCppCompileArgs {
   /// Generate nlohmann::json object as well.
   #[arg(long)]
   pub nlohmann: bool,
+}
+
+#[derive(clap::Args, Debug, Clone)]
+pub struct EmbedCompileArgs {
+  /// Path to the input text file(s).
+  #[arg(short, long, num_args = 1..)]
+  pub text: Vec<PathBuf>,
+
+  /// Path to the input binary file(s).
+  #[arg(short, long, num_args = 1..)]
+  pub binary: Vec<PathBuf>,
+
+  /// Namespace to use.
+  #[arg(short, long)]
+  pub namespace: String,
+
+  /// Path to the output directory.
+  #[arg(short = 'O', long)]
+  pub output_dir: PathBuf,
+
+  /// Output file name.
+  #[arg(short = 'o', long)]
+  pub output_name: Option<String>,
 }
 
 #[derive(clap::Args, Debug, Clone)]
