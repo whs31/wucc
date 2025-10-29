@@ -19,7 +19,7 @@
 
 namespace {{ namespace }} {
   {% for (stem, data) in text_data %}
-    auto constexpr {{ stem }}_c_str = R"({{ data }})";
+    auto constexpr {{ stem }}_c_str = R"WUCC_DELIMITER({{ data }})WUCC_DELIMITER";
 
     std::string_view {{ stem }}() noexcept {
       return {{ stem }}_c_str;

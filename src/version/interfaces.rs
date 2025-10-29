@@ -18,6 +18,9 @@ impl dyn VersionIO {
     if let Ok(meta) = super::YamlMetafile::new_auto() {
       files.push(("Plugin metafile", Box::new(meta) as Box<dyn VersionIO>));
     }
+    if let Ok(lua) = super::LuaMetafile::new_auto() {
+      files.push(("Plugin metafile (lua)", Box::new(lua) as Box<dyn VersionIO>));
+    }
     if let Ok(cargo) = super::CargoFile::new_auto() {
       files.push(("Cargo manifest", Box::new(cargo) as Box<dyn VersionIO>));
     }
